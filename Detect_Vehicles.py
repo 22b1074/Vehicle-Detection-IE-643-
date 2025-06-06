@@ -1,14 +1,28 @@
 import streamlit as st
 import torch
 from PIL import Image
-import numpy as np
+import gdown
 import os
-from pathlib import Path
 
+# Google Drive file ID
+file_id = "10-irxnQvn4MHWSWOZkFpucWjVoFj0XCa"
+weights_path = "best_ie643.pt"
+
+def download_weights_from_gdrive(file_id, filename):
+    if not os.path.exists(filename):
+        url = f"https://drive.google.com/uc?id={file_id}"
+        with st.spinner("Downloading model weights from Google Drive..."):
+            gdown.download(url, filename, quiet=False)
+        st.success("Download complete!")
+    else:
+        st.info("Weights already downloaded.")
+
+# Download weights if not present
+download_weights_from_gdrive(file_id, weights_path)
 # Load YOLOv5 model (change path if weights are in a custom location)
 @st.cache_resource
 def load_model():
-    model = torch.hub.load('ultralytics/yolov5', 'custom', path='best_ie643.pt')
+    model = torch.hub.load('ultralytics/yolov5', 'custom', path=weights_path)
     model.eval()
     return model
 
